@@ -1,299 +1,176 @@
+-- TTS Hook
+-- Main functionality
 function onload()
+    buildDataStructure()
     registerObjectGUIDs()
-    createDrawButtons()
-    createScryButtons()
-    createDredgeButtons()
-    createUntapButtons()
+    buildButtons()
 end
 
+-- Ensure data structure exists
+function buildDataStructure()
+    data = {
+        White = {},
+        Yellow = {},
+        Red = {},
+        Blue = {},
+        Purple = {},
+        Green = {}
+    }
+end
+
+-- Get pointers to in-game objects so we can script them
 function registerObjectGUIDs()
-  redDeckZone = getObjectFromGUID('409503')
-  yellowDeckZone = getObjectFromGUID('2365d0')
-  whiteDeckZone = getObjectFromGUID("166036")
-  greenDeckZone = getObjectFromGUID("c04462")
-  purpleDeckZone = getObjectFromGUID('033b34')
-  blueDeckZone = getObjectFromGUID('60bfe2')
+    data["White"]["libraryZone"] = getObjectFromGUID("166036")
+    data["Yellow"]["libraryZone"] = getObjectFromGUID("2365d0")
+    data["Red"]["libraryZone"] = getObjectFromGUID("409503")
+    data["Blue"]["libraryZone"] = getObjectFromGUID("60bfe2")
+    data["Purple"]["libraryZone"] = getObjectFromGUID("033b34")
+    data["Green"]["libraryZone"] = getObjectFromGUID("c04462")
 
-  whiteGraveyard = getObjectFromGUID('68549d')
-  yellowGraveyard = getObjectFromGUID('07dd80')
-  redGraveyard = getObjectFromGUID('6a7dbe')
-  blueGraveyard = getObjectFromGUID('ec35d8')
-  purpleGraveyard = getObjectFromGUID('8b439a')
-  greenGraveyard = getObjectFromGUID('debc40')
+    data["White"]["graveyard"] = getObjectFromGUID("68549d")
+    data["Yellow"]["graveyard"] = getObjectFromGUID("07dd80")
+    data["Red"]["graveyard"] = getObjectFromGUID("6a7dbe")
+    data["Blue"]["graveyard"] = getObjectFromGUID("ec35d8")
+    data["Purple"]["graveyard"] = getObjectFromGUID("8b439a")
+    data["Green"]["graveyard"] = getObjectFromGUID("debc40")
 
-  redDrawButton = getObjectFromGUID('eb4315')
-  yellowDrawButton = getObjectFromGUID('249a89')
-  whiteDrawButton = getObjectFromGUID('2e4a70')
-  greenDrawButton = getObjectFromGUID('57194f')
-  purpleDrawButton = getObjectFromGUID('177e38')
-  blueDrawButton = getObjectFromGUID('67c730')
+    data["White"]["playmat"] = getObjectFromGUID("8b3401")
+    data["Yellow"]["playmat"] = getObjectFromGUID("c20e3f")
+    data["Red"]["playmat"] = getObjectFromGUID("7cffe1")
+    data["Blue"]["playmat"] = getObjectFromGUID("b63e9c")
+    data["Purple"]["playmat"] = getObjectFromGUID("129eaa")
+    data["Green"]["playmat"] = getObjectFromGUID("56cd9d")
 
-  redScryButton = getObjectFromGUID('6fa145')
-  blueScryButton = getObjectFromGUID('8ec660')
-  whiteScryButton = getObjectFromGUID('ef4330')
-  purpleScryButton = getObjectFromGUID('772581')
-  yellowScryButton = getObjectFromGUID('c5f9f8')
-  greenScryButton = getObjectFromGUID('b80694')
+    data["White"]["drawButton"] = getObjectFromGUID("2e4a70")
+    data["Yellow"]["drawButton"] = getObjectFromGUID("249a89")
+    data["Red"]["drawButton"] = getObjectFromGUID("eb4315")
+    data["Blue"]["drawButton"] = getObjectFromGUID("67c730")
+    data["Purple"]["drawButton"] = getObjectFromGUID("177e38")
+    data["Green"]["drawButton"] = getObjectFromGUID("57194f")
 
-  whiteDredgeButton = getObjectFromGUID('de35fe')
-  yellowDredgeButton = getObjectFromGUID('8e980d')
-  redDredgeButton = getObjectFromGUID('b5ea78')
-  blueDredgeButton = getObjectFromGUID('61ede0')
-  purpleDredgeButton = getObjectFromGUID('ec0de6')
-  greenDredgeButton = getObjectFromGUID('a12036')
+    data["White"]["scryButton"] = getObjectFromGUID("ef4330")
+    data["Yellow"]["scryButton"] = getObjectFromGUID("c5f9f8")
+    data["Red"]["scryButton"] = getObjectFromGUID("6fa145")
+    data["Blue"]["scryButton"] = getObjectFromGUID("8ec660")
+    data["Purple"]["scryButton"] = getObjectFromGUID("772581")
+    data["Green"]["scryButton"] = getObjectFromGUID("b80694")
 
-  whitePlaymat = getObjectFromGUID('8b3401')
-  yellowPlaymat = getObjectFromGUID('c20e3f')
-  redPlaymat = getObjectFromGUID('7cffe1')
-  bluePlaymat = getObjectFromGUID('b63e9c')
-  purplePlaymat = getObjectFromGUID('129eaa')
-  greenPlaymat = getObjectFromGUID('56cd9d')
+    data["White"]["dredgeButton"] = getObjectFromGUID("de35fe")
+    data["Yellow"]["dredgeButton"] = getObjectFromGUID("8e980d")
+    data["Red"]["dredgeButton"] = getObjectFromGUID("b5ea78")
+    data["Blue"]["dredgeButton"] = getObjectFromGUID("61ede0")
+    data["Purple"]["dredgeButton"] = getObjectFromGUID("ec0de6")
+    data["Green"]["dredgeButton"] = getObjectFromGUID("a12036")
 
-  whiteUntapButton = getObjectFromGUID('2e4eb9')
-  yellowUntapButton = getObjectFromGUID('4b7845')
-  redUntapButton = getObjectFromGUID('e398aa')
-  blueUntapButton = getObjectFromGUID('4f9c73')
-  purpleUntapButton = getObjectFromGUID('3c3112')
-  greenUntapButton = getObjectFromGUID('e87e90')
+    data["White"]["untapButton"] = getObjectFromGUID("2e4eb9")
+    data["Yellow"]["untapButton"] = getObjectFromGUID("4b7845")
+    data["Red"]["untapButton"] = getObjectFromGUID("e398aa")
+    data["Blue"]["untapButton"] = getObjectFromGUID("4f9c73")
+    data["Purple"]["untapButton"] = getObjectFromGUID("3c3112")
+    data["Green"]["untapButton"] = getObjectFromGUID("e87e90")
 end
 
-function createDrawButtons()
-  redDrawButton = createButtonTTS(redDrawButton, 'Draw', 'redDraw', 'Draw')
-  yellowDrawButton = createButtonTTS(yellowDrawButton, 'Draw', 'yellowDraw', 'Draw')
-  whiteDrawButton = createButtonTTS(whiteDrawButton, 'Draw', 'whiteDraw', 'Draw')
-  greenDrawButton = createButtonTTS(greenDrawButton, 'Draw', 'greenDraw', 'Draw')
-  purpleDrawButton = createButtonTTS(purpleDrawButton, 'Draw', 'purpleDraw', 'Draw')
-  blueDrawButton = createButtonTTS(blueDrawButton, 'Draw', 'blueDraw', 'Draw')
-end
-
-function createScryButtons()
-  redScryButton = createButtonTTS(redScryButton, "Scry", "redScry", 'Scry')
-  blueScryButton = createButtonTTS(blueScryButton, "Scry", "blueScry", 'Scry')
-  whiteScryButton = createButtonTTS(whiteScryButton, "Scry", "whiteScry", 'Scry')
-  purpleScryButton = createButtonTTS(purpleScryButton, "Scry", "purpleScry", 'Scry')
-  yellowScryButton = createButtonTTS(yellowScryButton, "Scry", "yellowScry", 'Scry')
-  greenScryButton = createButtonTTS(greenScryButton, "Scry", "greenScry", 'Scry')
-end
-
-function createDredgeButtons()
-  whiteDredgeButton = createButtonTTS(whiteDredgeButton, "Dredge", "whiteDredge", 'Dredge')
-  yellowDredgeButton = createButtonTTS(yellowDredgeButton, "Dredge", "yellowDredge", 'Dredge')
-  redDredgeButton = createButtonTTS(redDredgeButton, "Dredge", "redDredge", 'Dredge')
-  blueDredgeButton = createButtonTTS(blueDredgeButton, "Dredge", "blueDredge", 'Dredge')
-  purpleDredgeButton = createButtonTTS(purpleDredgeButton, "Dredge", "purpleDredge", 'Dredge')
-  greenDredgeButton = createButtonTTS(greenDredgeButton, "Dredge", "greenDredge", 'Dredge')
-end
-
-function createUntapButtons()
-  whiteUntapButton = createButtonTTS(whiteUntapButton, "Untap", "untapWhite", "")
-  yellowUntapButton = createButtonTTS(yellowUntapButton, "Untap", "untapYellow", "")
-  redUntapButton = createButtonTTS(redUntapButton, "Untap", "untapRed", "")
-  blueUntapButton = createButtonTTS(blueUntapButton, "Untap", "untapBlue", "")
-  purpleUntapButton = createButtonTTS(purpleUntapButton, "Untap", "untapPurple", "")
-  greenUntapButton = createButtonTTS(greenUntapButton, "Untap", "untapGreen", "")
-end
-
--- Untaps
-function untapWhite()
-  untap(whitePlaymat)
-end
-
-function untapYellow()
-  untap(yelloPlaymat)
-end
-
-function untapRed()
-  untap(redPlaymat)
-end
-
-function untapBlue()
-  untap(bluePlaymat)
-end
-
-function untapPurple()
-  untap(purplePlaymat)
-end
-
-function untapBlue()
-  untap(bluePlaymat)
-end
-
-function untapGreen()
-  untap(greenPlaymat)
-end
-
-function untap(zone)
-  local ry = zone.getRotation()
-  local rr = nil
-  for k,v in pairs(zone.getObjects()) do
-    if v.tag == 'Card' or v.tag == 'Deck' then
-      rr = v.getRotation()
-      v.setRotationSmooth({x=rr.x,y=ry.y,z=rr.z})
+-- Adds functionality to player buttons
+function buildButtons()
+    for _color, playerData in pairs(data) do
+        createButton(playerData["drawButton"], "Draw", "playerDraw", "Draw")
+        createButton(playerData["scryButton"], "Scry", "playerScry", "Scry")
+        createButton(playerData["dredgeButton"], "Dredge", "playerDredge", "Dredge")
+        createButton(playerData["untapButton"], "Untap", "playerUntap", "")
     end
-  end
 end
 
--- Draws
-function redDraw()
-  redDeck.deal(1, "Red")
-end
-
-function yellowDraw()
-  yellowDeck.deal(1, "Yellow")
-end
-
-function greenDraw()
-  greenDeck.deal(1, "Green")
-end
-
-function blueDraw()
-  blueDeck.deal(1, "Blue")
-end
-
-function purpleDraw()
-  purpleDeck.deal(1, "Purple")
-end
-
-function whiteDraw()
-  whiteDeck.deal(1, "White")
-end
-
--- Scrys
-function redScry()
-  scry(redDeck, Player["Red"])
-end
-
-function whiteScry()
-  scry(whiteDeck, Player["White"])
-end
-
-function purpleScry()
-  scry(purpleDeck, Player["Purple"])
-end
-
-function yellowScry()
-  scry(yellowDeck, Player["Yellow"])
-end
-
-function blueScry()
-  scry(blueDeck, Player["Blue"])
-end
-
-function greenScry()
-  scry(greenDeck, Player["Green"])
+-- Draw a card from given player's deck
+function playerDraw(button, playerColor)
+    if button == data[playerColor]["drawButton"] then
+        data[playerColor]["deck"].deal(1, playerColor)
+    else
+        print("That's not your button " .. playerColor .. "!")
+    end
 end
 
 -- Move a card from the top of the deck to the scry zone
-function scry(deck, player)
-  local firstCardPresent, firstCard = pcall(deck.takeObject, {index=0})
-  if firstCardPresent then
-    local scryZone = player.getHandTransform(2).position
-    firstCard.setPosition(scryZone)
-    firstCard.flip()
-  else
-    print('You got no deck')
-  end
+function playerScry(button, playerColor)
+    if button == data[playerColor]["scryButton"] then
+        local deck = data[playerColor]["deck"]
+        local firstCardPresent, firstCard = pcall(deck.takeObject, {flip = true})
+        if firstCardPresent then
+            local scryZone = Player[playerColor].getHandTransform(2)
+            firstCard.setPosition(scryZone.position)
+        else
+            print("You got no deck " .. playercolor .. "!")
+        end
+    else
+        print("That's not your button " .. playerColor .. "!")
+    end
 end
 
--- Dredges
-function whiteDredge()
-  dredge(whiteDeck, whiteGraveyard)
+-- Moves a card from the top of the deck to the graveyard
+function playerDredge(button, playerColor)
+    if button == data[playerColor]["dredgeButton"] then
+        local deck = data[playerColor]["deck"]
+        local graveyard = data[playerColor]["graveyard"]
+        local firstCardPresent, firstCard = pcall(deck.takeObject, {flip = true})
+        if firstCardPresent then
+            pos_target = graveyard.getPosition()
+            pos = {
+                x = pos_target.x,
+                y = pos_target.y + 3,
+                z = pos_target.z
+            }
+            firstCard.setPositionSmooth(pos)
+        else
+            print("You got no deck " .. playercolor .. "!")
+        end
+    else
+        print("That's not your button " .. playerColor .. "!")
+    end
 end
 
-function yellowDredge()
-  dredge(yellowDeck, yellowGraveyard)
+-- Untap all cards on the player's playmat
+function playerUntap(button, playerColor)
+    if button == data[playerColor]["untapButton"] then
+        local playmat = data[playerColor]["playmat"]
+        local ry = playmat.getRotation()
+        local rr = nil
+        for k, v in pairs(playmat.getObjects()) do
+            if v.tag == "Card" or v.tag == "Deck" then
+                rr = v.getRotation()
+                v.setRotationSmooth({x = rr.x, y = ry.y, z = rr.z})
+            end
+        end
+    else
+        print("That's not your button " .. playerColor .. "!")
+    end
 end
 
-function redDredge()
-  dredge(redDeck, redGraveyard)
+-- Creates a button with given funcionality on the object
+function createButton(object, name, clickFunction, label)
+    object.setName(name)
+    object.lock()
+    return object.createButton(
+        {
+            click_function = clickFunction, -- string (required),
+            label = label, -- string,
+            width = 600, -- int,
+            height = 600, -- int,
+            position = {0, 0.1, 0},
+            font_size = 250, -- int,
+            color = {255, 255, 255, 0}, -- Color,w
+            font_color = {255, 255, 255, 255} -- Color,
+        }
+    )
 end
 
-function blueDredge()
-  dredge(blueDeck, blueGraveyard)
-end
-
-function purpleDredge()
-  dredge(purpleDeck, purpleGraveyard)
-end
-
-function greenDredge()
-  dredge(greenDeck, greenGraveyard)
-end
-
--- Moves a card from the top of the deck to the given graveyard
-function dredge(deck, graveyard)
-  local firstCardPresent, firstCard = pcall(deck.takeObject, {index=0})
-  if firstCardPresent then
-    firstCard.flip()
-    pos_target = graveyard.getPosition()
-    pos = {
-        x = pos_target.x,
-        y = pos_target.y + 3,
-        z = pos_target.z,
-    }
-    firstCard.setPositionSmooth(pos)
-  else
-    print('You got no deck')
-  end
-end
-
--- Creates a button with given funcionality
-function createButtonTTS(button, name, clickFunction, label)
-  button.setName(functionality)
-  button.lock()
-  return button.createButton({
-    click_function = clickFunction, -- string (required),
-    label          = label, -- string,
-    width          = 600, -- int,
-    height         = 600, -- int,
-    position       = {0,0.1,0},
-    font_size      = 250, -- int,
-    color          = {255,255,255,0}, -- Color,w
-    font_color     = {255,255,255,255} -- Color,
-  })
-end
-
--- Registers decks when dropped on the deck zones
+-- TTS Hook
+-- Register a deck when dropped on the library zone
 function onObjectEnterScriptingZone(currentZone, object)
-  if currentZone == redDeckZone then
-      if object.tag == "Deck" then
-        redDeck = object
-        object.setName("Red Deck")
-      end
-  end
-
-  if currentZone == yellowDeckZone then
-      if object.tag == "Deck" then
-        yellowDeck = object
-        object.setName("Yellow Deck")
-      end
-  end
-
-  if currentZone == whiteDeckZone then
-      if object.tag == "Deck" then
-        whiteDeck = object
-        object.setName("White Deck")
-      end
-  end
-
-  if currentZone == greenDeckZone then
-      if object.tag == "Deck" then
-        object.setName("Green Deck")
-        greenDeck = object
-      end
-  end
-
-  if currentZone == purpleDeckZone then
-      if object.tag == "Deck" then
-        object.setName("Purple Deck")
-        purpleDeck = object
-      end
-  end
-
-  if currentZone == blueDeckZone then
-      if object.tag == "Deck" then
-        object.setName("Blue Deck")
-        blueDeck = object
-      end
-  end
+    if object.tag == "Deck" then
+        for color, playerData in pairs(data) do
+            if currentZone == playerData["libraryZone"] then
+                playerData["deck"] = object
+                object.setName(color .. " Deck")
+            end
+        end
+    end
 end
