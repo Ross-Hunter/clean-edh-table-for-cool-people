@@ -9,12 +9,24 @@ end
 -- Ensure data structure exists
 function buildDataStructure()
     data = {
-        White = {},
-        Yellow = {},
-        Red = {},
-        Blue = {},
-        Purple = {},
-        Green = {}
+        White = {
+          deck = nil
+        },
+        Yellow = {
+          deck = nil
+        },
+        Red = {
+          deck = nil
+        },
+        Blue = {
+          deck = nil
+        },
+        Purple = {
+          deck = nil
+        },
+        Green = {
+          deck = nil
+        }
     }
 end
 
@@ -83,9 +95,14 @@ end
 -- Draw a card from given player's deck
 function playerDraw(button, playerColor)
     if button == data[playerColor]["drawButton"] then
-        data[playerColor]["deck"].deal(1, playerColor)
+        local deck = data[playerColor]["deck"]
+        if deck == nil then
+          broadcastToColor("You got no deck " .. playerColor .. "!", playerColor)
+        else
+          deck.deal(1, playerColor)
+        end
     else
-        print("That's not your button " .. playerColor .. "!")
+        broadcastToColor("That's not your button " .. playerColor .. "!", playerColor)
     end
 end
 
@@ -98,10 +115,10 @@ function playerScry(button, playerColor)
             local scryZone = Player[playerColor].getHandTransform(2)
             firstCard.setPosition(scryZone.position)
         else
-            print("You got no deck " .. playercolor .. "!")
+            broadcastToColor("You got no deck " .. playerColor .. "!", playerColor)
         end
     else
-        print("That's not your button " .. playerColor .. "!")
+        broadcastToColor("That's not your button " .. playerColor .. "!", playerColor)
     end
 end
 
@@ -115,15 +132,15 @@ function playerDredge(button, playerColor)
             pos_target = graveyard.getPosition()
             pos = {
                 x = pos_target.x,
-                y = pos_target.y + 3,
+                y = pos_target.y + 2.5,
                 z = pos_target.z
             }
             firstCard.setPositionSmooth(pos)
         else
-            print("You got no deck " .. playercolor .. "!")
+            broadcastToColor("You got no deck " .. playerColor .. "!", playerColor)
         end
     else
-        print("That's not your button " .. playerColor .. "!")
+        broadcastToColor("That's not your button " .. playerColor .. "!", playerColor)
     end
 end
 
@@ -140,7 +157,7 @@ function playerUntap(button, playerColor)
             end
         end
     else
-        print("That's not your button " .. playerColor .. "!")
+        broadcastToColor("That's not your button " .. playerColor .. "!", playerColor)
     end
 end
 
@@ -173,4 +190,18 @@ function onObjectEnterScriptingZone(currentZone, object)
             end
         end
     end
+end
+
+-- TTS Hook
+-- Scripting hotkeys
+function onScriptingButtonDown(index, playerColor)
+  if index == 1 then
+    playerUntap(data[playerColor]["untapButton"], playerColor)
+  elseif index == 2 then
+    playerDraw(data[playerColor]["drawButton"], playerColor)
+  elseif index == 3 then
+    playerScry(data[playerColor]["scryButton"], playerColor)
+  elseif index == 4 then
+    playerDredge(data[playerColor]["dredgeButton"], playerColor)
+  end
 end
