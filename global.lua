@@ -160,34 +160,39 @@ end
 
 -- Scrys
 function redScry()
-  sry(redDeck, Player.red)
+  scry(redDeck, Player["Red"])
 end
 
 function whiteScry()
-  scry(whiteDeck, Player.white)
+  scry(whiteDeck, Player["White"])
 end
 
 function purpleScry()
-  scry(purpleDeck, Player.purple)
+  scry(purpleDeck, Player["Purple"])
 end
 
 function yellowScry()
-  scry(yellowDeck, Player.yellow)
+  scry(yellowDeck, Player["Yellow"])
 end
 
 function blueScry()
-  scry(blueDeck, Player.blue)
+  scry(blueDeck, Player["Blue"])
 end
 
 function greenScry()
-  scry(greenDeck, Player.Green)
+  scry(greenDeck, Player["Green"])
 end
 
 -- Move a card from the top of the deck to the scry zone
 function scry(deck, player)
-  local firstCard = deck.takeObject({index=0})
-  firstCard.setPosition(player.getHandTransform(2).position)
-  firstCard.flip()
+  local firstCardPresent, firstCard = pcall(deck.takeObject, {index=0})
+  if firstCardPresent then
+    local scryZone = player.getHandTransform(2).position
+    firstCard.setPosition(scryZone)
+    firstCard.flip()
+  else
+    print('You got no deck')
+  end
 end
 
 -- Dredges
@@ -217,15 +222,19 @@ end
 
 -- Moves a card from the top of the deck to the given graveyard
 function dredge(deck, graveyard)
-  local firstCard = deck.takeObject({index=0})
-  firstCard.flip()
-  pos_target = graveyard.getPosition()
-  pos = {
-      x = pos_target.x,
-      y = pos_target.y + 3,
-      z = pos_target.z,
-  }
-  firstCard.setPositionSmooth(pos)
+  local firstCardPresent, firstCard = pcall(deck.takeObject, {index=0})
+  if firstCardPresent then
+    firstCard.flip()
+    pos_target = graveyard.getPosition()
+    pos = {
+        x = pos_target.x,
+        y = pos_target.y + 3,
+        z = pos_target.z,
+    }
+    firstCard.setPositionSmooth(pos)
+  else
+    print('You got no deck')
+  end
 end
 
 -- Creates a button with given funcionality
