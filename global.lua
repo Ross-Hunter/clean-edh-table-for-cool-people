@@ -1,3 +1,6 @@
+-- Acknowledgements:
+-- Based heavily on Amuzet's Table -> https://steamcommunity.com/sharedfiles/filedetails/?id=1430411207
+
 -- TTS Hook
 -- Main functionality
 function onload()
@@ -46,15 +49,15 @@ function registerObjectGUIDs()
   data["Purple"]["drawButton"] = getObjectFromGUID("177e38")
   data["Green"]["drawButton"] = getObjectFromGUID("57194f")
 
-  data["White"]["scryButton"] = getObjectFromGUID("ef4330")
-  data["Yellow"]["scryButton"] = getObjectFromGUID("c5f9f8")
-  data["Purple"]["scryButton"] = getObjectFromGUID("772581")
-  data["Green"]["scryButton"] = getObjectFromGUID("b80694")
+  data["White"]["peekButton"] = getObjectFromGUID("ef4330")
+  data["Yellow"]["peekButton"] = getObjectFromGUID("c5f9f8")
+  data["Purple"]["peekButton"] = getObjectFromGUID("772581")
+  data["Green"]["peekButton"] = getObjectFromGUID("b80694")
 
-  data["White"]["dredgeButton"] = getObjectFromGUID("de35fe")
-  data["Yellow"]["dredgeButton"] = getObjectFromGUID("8e980d")
-  data["Purple"]["dredgeButton"] = getObjectFromGUID("ec0de6")
-  data["Green"]["dredgeButton"] = getObjectFromGUID("a12036")
+  data["White"]["millButton"] = getObjectFromGUID("de35fe")
+  data["Yellow"]["millButton"] = getObjectFromGUID("8e980d")
+  data["Purple"]["millButton"] = getObjectFromGUID("ec0de6")
+  data["Green"]["millButton"] = getObjectFromGUID("a12036")
 
   data["White"]["untapButton"] = getObjectFromGUID("2e4eb9")
   data["Yellow"]["untapButton"] = getObjectFromGUID("4b7845")
@@ -66,8 +69,8 @@ end
 function buildButtons()
   for _color, playerData in pairs(data) do
     createButton(playerData["drawButton"], "Draw", "playerDraw", "")
-    createButton(playerData["scryButton"], "Peek", "playerScry", "")
-    createButton(playerData["dredgeButton"], "Mill", "playerDredge", "")
+    createButton(playerData["peekButton"], "Peek", "playerPeek", "")
+    createButton(playerData["millButton"], "Mill", "playerMill", "")
     createButton(playerData["untapButton"], "Untap", "playerUntap", "")
   end
 end
@@ -86,9 +89,9 @@ function playerDraw(button, playerColor)
   end
 end
 
--- Move a card from the top of the deck to the scry zone
-function playerScry(button, playerColor)
-  if button == data[playerColor]["scryButton"] then
+-- Move a card from the top of the deck to the scry/peek zone
+function playerPeek(button, playerColor)
+  if button == data[playerColor]["peekButton"] then
     local deck = data[playerColor]["deck"]
     local firstCardPresent, firstCard = pcall(deck.takeObject, {flip = true})
     if firstCardPresent then
@@ -103,8 +106,8 @@ function playerScry(button, playerColor)
 end
 
 -- Moves a card from the top of the deck to the graveyard
-function playerDredge(button, playerColor)
-  if button == data[playerColor]["dredgeButton"] then
+function playerMill(button, playerColor)
+  if button == data[playerColor]["millButton"] then
     local deck = data[playerColor]["deck"]
     local graveyard = data[playerColor]["graveyard"]
     local firstCardPresent, firstCard = pcall(deck.takeObject, {flip = true})
@@ -147,20 +150,22 @@ function createButton(object, name, clickFunction, label)
   object.lock()
   return object.createButton(
   {
-    click_function = clickFunction, -- string (required),
-    label = label, -- string,
-    width = 600, -- int,
-    height = 600, -- int,
+    click_function = clickFunction,
+    label = label,
+    width = 600,
+    height = 600,
     position = {0, 0.1, 0},
-    font_size = 250, -- int,
-    color = {255, 255, 255, 0}, -- Color,w
-    font_color = {255, 255, 255, 255} -- Color,
+    font_size = 250,
+    color = {255, 255, 255, 0},
+    font_color = {255, 255, 255, 255}
   }
   )
 end
 
 -- TTS Hook
 -- Register a deck when dropped on the library zone
+-- This is the buggiest part of this code.
+-- Things can get wonky and picking up and moving it out and back in the deck zone fixes it
 function onObjectEnterScriptingZone(currentZone, object)
   if object.tag == "Deck" then
     for color, playerData in pairs(data) do
@@ -180,8 +185,8 @@ function onScriptingButtonDown(index, playerColor)
   elseif index == 2 then
     playerDraw(data[playerColor]["drawButton"], playerColor)
   elseif index == 3 then
-    playerScry(data[playerColor]["scryButton"], playerColor)
+    playerPeek(data[playerColor]["peekButton"], playerColor)
   elseif index == 4 then
-    playerDredge(data[playerColor]["dredgeButton"], playerColor)
+    playerMill(data[playerColor]["millButton"], playerColor)
   end
 end
