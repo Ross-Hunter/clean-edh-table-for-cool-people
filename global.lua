@@ -163,16 +163,39 @@ function createButton(object, name, clickFunction, label)
 end
 
 -- TTS Hook
--- Register a deck when dropped on the library zone
--- This is the buggiest part of this code.
--- Things can get wonky and picking up and moving it out and back in the deck zone fixes it
 function onObjectEnterScriptingZone(currentZone, object)
-  local tag = object["tag"]
-  if tag and tag == "Deck" then
+  if object == nil then
+    return -- so sometimes object comes through as nil? Thanks TTS!
+  end
+  if object.tag == "Deck" then
+    -- Register a deck when entering a library zone
+    -- This is the buggiest part of this code.
+    -- Things can get wonky and picking up and moving it out and back in the deck zone fixes it
     for color, playerData in pairs(data) do
       if currentZone == playerData["libraryZone"] then
         playerData["deck"] = object
-        object.setName(color .. " Deck")
+        pcall(object.setName, color .. " Deck")
+        broadcastToColor("Registered Deck for " .. color .. "!", color)
+      end
+    end
+  end
+
+end
+
+-- TTS Hook
+function onObjectLeaveScriptingZone(currentZone, object)
+  if object == nil then
+    return -- so sometimes object comes through as nil? Thanks TTS!
+  end
+  if object.tag == "Deck" then
+    -- Unregister a deck when leaving the library zone
+    -- This is the buggiest part of this code.
+    -- Things can get wonky and picking up and moving it out and back in the deck zone fixes it
+    for color, playerData in pairs(data) do
+      if currentZone == playerData["libraryZone"] then
+        playerData["deck"] = nil
+        pcall(object.setName, "")
+        broadcastToColor("Unregistered Deck for " .. color .. "!", color)
       end
     end
   end
