@@ -167,7 +167,8 @@ end
 -- This is the buggiest part of this code.
 -- Things can get wonky and picking up and moving it out and back in the deck zone fixes it
 function onObjectEnterScriptingZone(currentZone, object)
-  if object.tag == "Deck" then
+  local tag = object["tag"]
+  if tag and tag == "Deck" then
     for color, playerData in pairs(data) do
       if currentZone == playerData["libraryZone"] then
         playerData["deck"] = object
